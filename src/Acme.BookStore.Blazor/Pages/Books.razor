@@ -39,7 +39,7 @@
                   PageSize="PageSize"
                   RowClicked="OnRowClicked">
             <DataGridColumns>
-                <DataGridEntityActionsColumn TItem="BookDto" @ref="@EntityActionsColumn">
+                <DataGridEntityActionsColumn TItem="BookDto" @ref="@EntityActionsColumn" PreventRowClick>
                     <DisplayTemplate>
                         <EntityActions TItem="BookDto" EntityActionsColumn="@EntityActionsColumn">
                             <EntityAction TItem="BookDto"
