@@ -55,6 +55,10 @@ public class BookStoreMenuContributor : IMenuContributor
                 url: "/authors"
             ));
         }
-
+        bookStoreMenu.AddItem(new ApplicationMenuItem(
+            "BooksStore.BookSearch",
+            l["Menu:BookSearch"],
+            url: "/book-search"
+        ));
     }
 }

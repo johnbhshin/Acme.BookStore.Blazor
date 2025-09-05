@@ -106,6 +106,28 @@ public class BookAppService :
         );
     }
 
+    public async Task<ListResultDto<BookDto>> SearchAsync(BookSearchInput input)
+    {
+        var queryable = await Repository.GetQueryableAsync();
+
+        var query = from book in queryable
+                    join author in await _authorRepository.GetQueryableAsync() on book.AuthorId equals author.Id
+                    where (input.AuthorName == null || author.Name.Contains(input.AuthorName))
+                       && (input.BookTitle == null || book.Name.Contains(input.BookTitle))
+                    select new { book, author };
+
+        var queryResult = await AsyncExecuter.ToListAsync(query);
+
+        var bookDtos = queryResult.Select(x =>
+        {
+            var bookDto = ObjectMapper.Map<Book, BookDto>(x.book);
+            bookDto.AuthorName = x.author.Name;
+            return bookDto;
+        }).ToList();
+
+        return new ListResultDto<BookDto>(bookDtos);
+    }
+
     private static string NormalizeSorting(string sorting)
     {
         if (sorting.IsNullOrEmpty())

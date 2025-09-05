@@ -1,0 +1,51 @@
+@page "/book-search"
+@using Acme.BookStore.Books
+@using Acme.BookStore.Localization
+@using Microsoft.Extensions.Localization
+@inject IBookAppService BookAppService
+@inject IStringLocalizer<BookStoreResource> L
+
+<Card>
+    <CardHeader>
+        <h2>@L["BookSearch"]</h2>
+    </CardHeader>
+    <CardBody>
+        <Form>
+            <Field>
+                <FieldLabel>@L["AuthorName"]</FieldLabel>
+                <TextEdit @bind-Text="searchInput.AuthorName" />
+            </Field>
+            <Field>
+                <FieldLabel>@L["BookTitle"]</FieldLabel>
+                <TextEdit @bind-Text="searchInput.BookTitle" />
+            </Field>
+            <Button Color="Color.Primary" Clicked="SearchAsync">@L["Search"]</Button>
+        </Form>
+
+        @if (results != null)
+        {
+            <DataGrid TItem="BookDto" Data="results" ShowPager="false">
+                <DataGridColumns>
+                    <DataGridColumn TItem="BookDto" Field="@nameof(BookDto.Name)" Caption="@L["Name"]" />
+                    <DataGridColumn TItem="BookDto" Field="@nameof(BookDto.AuthorName)" Caption="@L["Author"]" />
+                    <DataGridColumn TItem="BookDto" Field="@nameof(BookDto.Type)" Caption="@L["Type"]">
+                        <DisplayTemplate>
+                            @L[$"Enum:BookType.{context.Type}"]
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+            </DataGrid>
+        }
+    </CardBody>
+</Card>
+
+@code {
+    private BookSearchInput searchInput = new();
+    private IReadOnlyList<BookDto>? results;
+
+    private async Task SearchAsync()
+    {
+        var list = await BookAppService.SearchAsync(searchInput);
+        results = list.Items;
+    }
+}
